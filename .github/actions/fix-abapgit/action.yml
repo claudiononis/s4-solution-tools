@@ -1,0 +1,9 @@
+name: Fix abapGit serialization
+description: Corrige metadatos omitidos por abapGit antes de generar la rama instalable
+
+runs:
+  using: composite
+  steps:
+    - name: Corregir descriptions SRVD/SRVB
+      shell: bash
+      run: python3 "$GITHUB_ACTION_PATH/../../../scripts/fix_abapgit_descriptions.py"
