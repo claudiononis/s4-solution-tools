@@ -1,0 +1,44 @@
+name: Prepare abapGit install branch
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio del proyecto
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Crear rama instalable desde el commit actual
+        shell: bash
+        run: |
+          git switch -C install
+
+      - name: Corregir serializacion abapGit
+        uses: claudiononis/s4-solution-tools/.github/actions/fix-abapgit@main
+
+      - name: Preparar commit instalable
+        shell: bash
+        run: |
+          git config user.name "s4-solution-tools"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No hubo correcciones adicionales."
+          else
+            git commit -m "Prepare installable abapGit package"
+          fi
+
+      - name: Publicar rama install
+        shell: bash
+        run: |
+          git push origin HEAD:install --force
